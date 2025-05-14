@@ -1,3 +1,7 @@
-# -*- coding: utf-8 -*-
+from img.main import compress_action, decompress_action
 
-print("Đang phát triển...")
+def compress(file):
+    return compress_action(file)
+
+def decompress(file):
+    return decompress_action(file)
