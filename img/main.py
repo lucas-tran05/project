@@ -144,7 +144,7 @@ def compress_action():
 
     save_path = filedialog.asksaveasfilename(
         defaultextension=".bin",
-        filetypes=[("Binary Files", "*.bin")],
+        filetypes=[("Binary Files", "*.huff")],
         title="Lưu file nén"
     )
     if not save_path:
