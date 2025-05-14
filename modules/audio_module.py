@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from audio.compressor import compress_audio_file, decompress_audio_file
 
 def compress(file):

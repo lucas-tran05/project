@@ -1,101 +1,109 @@
+# -*- coding: utf-8 -*-
+
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+from tkinter import filedialog, messagebox, ttk
 from modules import audio_module, text_module, image_module
 
 def launch_main_gui():
-    def choose_file():
-        filepath.set(filedialog.askopenfilename())
+    class HuffmanApp:
+        def __init__(self, root):
+            self.root = root
+            self.root.title("Huffman Encoder/Decoder")
+            self.root.geometry("600x400")
 
-    def show_code_table(code_table):
-        window = tk.Toplevel()
-        window.title("Bảng mã Huffman")
-        text_widget = tk.Text(window, width=60, height=25)
-        text_widget.pack(padx=10, pady=10)
-        for byte, code in code_table.items():
-            try:
-                char = byte.decode('utf-8')
-                line = f"{repr(char)} ({byte})  =>  {code}\n"
-            except:
-                line = f"{byte}  =>  {code}\n"
-            text_widget.insert(tk.END, line)
-        text_widget.config(state=tk.DISABLED)
+            self.file_path = tk.StringVar()
+            self.file_type = tk.StringVar(value="text")
 
-    def process_file():
-        file = filepath.get()
-        data_type = type_option.get()
-        operation = root_option.get()
+            self.create_widgets()
 
-        if not file or not data_type or not operation:
-            messagebox.showerror("Thiếu thông tin", "Hãy điền đủ các lựa chọn và file")
-            return
+        def create_widgets(self):
+            # File type selector
+            type_frame = tk.LabelFrame(self.root, text="Chọn kiểu file")
+            type_frame.pack(fill="x", padx=10, pady=10)
 
-        if data_type == "Audio":
-            if operation == "Mã hóa":
-                output, table, og, cp, code_table = audio_module.compress(file)
-                show_code_table(code_table)
-                messagebox.showinfo("Nén xong", f"Đã lưu: {output}\nDung lượng: {og} -> {cp}")
+            types = [("Text", "text"), ("Image", "image"), ("Audio", "audio")]
+            for label, value in types:
+                tk.Radiobutton(type_frame, text=label, variable=self.file_type, value=value).pack(side="left", padx=10)
+
+            # File chooser
+            file_frame = tk.Frame(self.root)
+            file_frame.pack(fill="x", padx=10, pady=5)
+
+            tk.Button(file_frame, text="Chọn File", command=self.choose_file).pack(side="left")
+            tk.Entry(file_frame, textvariable=self.file_path, width=50).pack(side="left", padx=10)
+
+            # Action buttons
+            btn_frame = tk.Frame(self.root)
+            btn_frame.pack(pady=10)
+
+            tk.Button(btn_frame, text="Mã hóa", command=self.encode_file, width=15).pack(side="left", padx=10)
+            tk.Button(btn_frame, text="Giải mã", command=self.decode_file, width=15).pack(side="left", padx=10)
+
+            # Huffman table output
+            self.code_frame = tk.LabelFrame(self.root, text="Bảng mã Huffman")
+            self.code_frame.pack(fill="both", expand=True, padx=10, pady=10)
+
+            self.code_text = tk.Text(self.code_frame)
+            self.code_text.pack(fill="both", expand=True)
+
+        def choose_file(self):
+            filetype = self.file_type.get()
+            if filetype == "text":
+                filetypes = [("Text files", "*.txt")]
+            elif filetype == "image":
+                filetypes = [("Image files", "*.png;*.jpg;*.bmp")]
+            elif filetype == "audio":
+                filetypes = [("Audio files", "*.wav;*.mp3")]
             else:
-                output, table = audio_module.decompress(file)
-                messagebox.showinfo("Giải nén xong", f"Đã lưu: {output}")
+                filetypes = [("All files", "*.*")]
 
-        elif data_type == "Text":
-            if operation == "Mã hóa":
-                code_table = text_module.compress(file)
-                show_code_table(code_table)
+            path = filedialog.askopenfilename(filetypes=filetypes)
+            if path:
+                self.file_path.set(path)
+
+        def encode_file(self):
+            path = self.file_path.get()
+            if not path:
+                messagebox.showerror("Lỗi", "Vui lòng chọn file.")
+                return
+
+            filetype = self.file_type.get()
+            if filetype == "text":
+                bits, code_table = text_module.encode(path)
+            elif filetype == "image":
+                bits, code_table = image_module.encode(path)
+            elif filetype == "audio":
+                bits, code_table = audio_module.encode(path)
             else:
-                text_module.decompress(file)
+                messagebox.showerror("Lỗi", "Loại file không hợp lệ.")
+                return
 
-        elif data_type == "Image":
-            if operation == "Mã hóa":
-                code_table = image_module.compress(file)
-                show_code_table(code_table)
+            self.show_code_table(code_table)
+            messagebox.showinfo("Xong", "Mã hóa thành công. File .huff đã được lưu.")
+
+        def decode_file(self):
+            huff_path = filedialog.askopenfilename(filetypes=[("Huffman Encoded Files", "*.huff")])
+            if not huff_path:
+                return
+
+            filetype = self.file_type.get()
+            if filetype == "text":
+                text_module.decode(huff_path)
+            elif filetype == "image":
+                image_module.decode(huff_path)
+            elif filetype == "audio":
+                audio_module.decode(huff_path)
             else:
-                image_module.decompress(file)
+                messagebox.showerror("Lỗi", "Loại file không hợp lệ.")
+                return
 
-    # === UI ===
-    window = tk.Tk()
-    window.title("Máy mã hóa giải mã tổng hợp by Cường đẹp trai")
+            messagebox.showinfo("Xong", "Giải mã hoàn tất. File gốc đã được khôi phục.")
 
-    # Cột trái: tuỳ chọn
-    frame_left = tk.Frame(window, padx=10, pady=10)
-    frame_left.grid(row=0, column=0, sticky="n")
+        def show_code_table(self, code_table):
+            self.code_text.delete("1.0", tk.END)
+            for k, v in code_table.items():
+                self.code_text.insert(tk.END, f"{repr(k)}: {v}\n")
 
-    tk.Label(frame_left, text="Option root:").pack(anchor="w")
-    root_option = ttk.Combobox(frame_left, values=["Mã hóa", "Giải mã"])
-    root_option.pack(fill="x")
-
-    tk.Label(frame_left, text="Option next:").pack(anchor="w", pady=(10, 0))
-    type_option = ttk.Combobox(frame_left, values=["Text", "Image", "Audio"])
-    type_option.pack(fill="x")
-
-    tk.Label(frame_left, text="File input:").pack(anchor="w", pady=(10, 0))
-    filepath = tk.StringVar()
-    tk.Entry(frame_left, textvariable=filepath, width=30).pack()
-    tk.Button(frame_left, text="Browse", command=choose_file).pack(pady=5)
-
-    tk.Button(frame_left, text="Thực hiện", command=process_file).pack(pady=(20, 0))
-
-    # Cột phải: khung xử lý
-    frame_right = tk.Frame(window, padx=10, pady=10)
-    frame_right.grid(row=0, column=1)
-
-    # Ô 1: nhập dữ liệu
-    frame_top = tk.LabelFrame(frame_right, text="1. Nhập dữ liệu")
-    frame_top.pack(fill="both", expand=True)
-
-    input_label = tk.Label(frame_top, text="Chọn file hoặc nhập text tùy theo loại dữ liệu")
-    input_label.pack()
-
-    # Ô 2: kết quả
-    frame_bottom = tk.LabelFrame(frame_right, text="2. Kết quả")
-    frame_bottom.pack(fill="both", expand=True, pady=10)
-
-    tk.Label(frame_bottom, text="(Hiển thị bảng mã sau khi mã hóa)").pack()
-
-    btn_frame = tk.Frame(frame_bottom)
-    btn_frame.pack(pady=10)
-
-    tk.Button(btn_frame, text="Tải file .huff", command=lambda: messagebox.showinfo("TODO", "Chức năng chưa làm")).pack(side="left", padx=5)
-    tk.Button(btn_frame, text="Xem bit mã hóa", command=lambda: messagebox.showinfo("TODO", "Chức năng chưa làm")).pack(side="left", padx=5)
-
-    window.mainloop()
+    root = tk.Tk()
+    app = HuffmanApp(root)
+    root.mainloop()
