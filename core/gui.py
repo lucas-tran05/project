@@ -9,10 +9,8 @@ def launch_main_gui():
     def show_code_table(code_table):
         window = tk.Toplevel()
         window.title("Bảng mã Huffman")
-
         text_widget = tk.Text(window, width=60, height=25)
         text_widget.pack(padx=10, pady=10)
-
         for byte, code in code_table.items():
             try:
                 char = byte.decode('utf-8')
@@ -20,60 +18,84 @@ def launch_main_gui():
             except:
                 line = f"{byte}  =>  {code}\n"
             text_widget.insert(tk.END, line)
-
         text_widget.config(state=tk.DISABLED)
 
-    def compress():
+    def process_file():
         file = filepath.get()
-        mode = option.get()
-        if not file:
-            messagebox.showerror("Lỗi", "Chưa chọn file!")
+        data_type = type_option.get()
+        operation = root_option.get()
+
+        if not file or not data_type or not operation:
+            messagebox.showerror("Thiếu thông tin", "Hãy điền đủ các lựa chọn và file")
             return
 
-        if mode == "Audio":
-            output_path, table_path, original_size, compressed_size, code_table = audio_module.compress(file)
-            show_code_table(code_table)
-            messagebox.showinfo(
-                "Thành công",
-                f"Nén thành công!\nGốc: {original_size} bytes\nNén: {compressed_size} bytes\nLưu: {output_path}"
-            )
-        elif mode == "Text":
-            text_module.compress(file)
-        elif mode == "Image":
-            image_module.compress(file)
-        else:
-            messagebox.showwarning("Thông báo", "Chưa chọn chế độ")
+        if data_type == "Audio":
+            if operation == "Mã hóa":
+                output, table, og, cp, code_table = audio_module.compress(file)
+                show_code_table(code_table)
+                messagebox.showinfo("Nén xong", f"Đã lưu: {output}\nDung lượng: {og} -> {cp}")
+            else:
+                output, table = audio_module.decompress(file)
+                messagebox.showinfo("Giải nén xong", f"Đã lưu: {output}")
 
-    def decompress():
-        file = filepath.get()
-        mode = option.get()
-        if not file:
-            messagebox.showerror("Lỗi", "Chưa chọn file!")
-            return
+        elif data_type == "Text":
+            if operation == "Mã hóa":
+                code_table = text_module.compress(file)
+                show_code_table(code_table)
+            else:
+                text_module.decompress(file)
 
-        if mode == "Audio":
-            output_path, code_table = audio_module.decompress(file)
-            messagebox.showinfo("Thành công", f"Giải nén thành công!\nLưu: {output_path}")
-        elif mode == "Text":
-            text_module.decompress(file)
-        elif mode == "Image":
-            image_module.decompress(file)
-        else:
-            messagebox.showwarning("Thông báo", "Chưa chọn chế độ")
+        elif data_type == "Image":
+            if operation == "Mã hóa":
+                code_table = image_module.compress(file)
+                show_code_table(code_table)
+            else:
+                image_module.decompress(file)
 
-    root = tk.Tk()
-    root.title("Bộ mã hóa tổng hợp by Cường đẹp trai")
+    # === UI ===
+    window = tk.Tk()
+    window.title("Máy mã hóa giải mã tổng hợp by Cường đẹp trai")
 
-    tk.Label(root, text="Chọn chế độ:").grid(row=0, column=0, padx=10, pady=5)
-    option = ttk.Combobox(root, values=["Audio", "Text", "Image"])
-    option.grid(row=0, column=1)
+    # Cột trái: tuỳ chọn
+    frame_left = tk.Frame(window, padx=10, pady=10)
+    frame_left.grid(row=0, column=0, sticky="n")
 
-    tk.Label(root, text="Đường dẫn file:").grid(row=1, column=0, padx=10, pady=5)
+    tk.Label(frame_left, text="Option root:").pack(anchor="w")
+    root_option = ttk.Combobox(frame_left, values=["Mã hóa", "Giải mã"])
+    root_option.pack(fill="x")
+
+    tk.Label(frame_left, text="Option next:").pack(anchor="w", pady=(10, 0))
+    type_option = ttk.Combobox(frame_left, values=["Text", "Image", "Audio"])
+    type_option.pack(fill="x")
+
+    tk.Label(frame_left, text="File input:").pack(anchor="w", pady=(10, 0))
     filepath = tk.StringVar()
-    tk.Entry(root, textvariable=filepath, width=40).grid(row=1, column=1)
-    tk.Button(root, text="Browse", command=choose_file).grid(row=1, column=2)
+    tk.Entry(frame_left, textvariable=filepath, width=30).pack()
+    tk.Button(frame_left, text="Browse", command=choose_file).pack(pady=5)
 
-    tk.Button(root, text="Nén", command=compress).grid(row=2, column=0, pady=10)
-    tk.Button(root, text="Giải nén", command=decompress).grid(row=2, column=1)
+    tk.Button(frame_left, text="Thực hiện", command=process_file).pack(pady=(20, 0))
 
-    root.mainloop()
+    # Cột phải: khung xử lý
+    frame_right = tk.Frame(window, padx=10, pady=10)
+    frame_right.grid(row=0, column=1)
+
+    # Ô 1: nhập dữ liệu
+    frame_top = tk.LabelFrame(frame_right, text="1. Nhập dữ liệu")
+    frame_top.pack(fill="both", expand=True)
+
+    input_label = tk.Label(frame_top, text="Chọn file hoặc nhập text tùy theo loại dữ liệu")
+    input_label.pack()
+
+    # Ô 2: kết quả
+    frame_bottom = tk.LabelFrame(frame_right, text="2. Kết quả")
+    frame_bottom.pack(fill="both", expand=True, pady=10)
+
+    tk.Label(frame_bottom, text="(Hiển thị bảng mã sau khi mã hóa)").pack()
+
+    btn_frame = tk.Frame(frame_bottom)
+    btn_frame.pack(pady=10)
+
+    tk.Button(btn_frame, text="Tải file .huff", command=lambda: messagebox.showinfo("TODO", "Chức năng chưa làm")).pack(side="left", padx=5)
+    tk.Button(btn_frame, text="Xem bit mã hóa", command=lambda: messagebox.showinfo("TODO", "Chức năng chưa làm")).pack(side="left", padx=5)
+
+    window.mainloop()
