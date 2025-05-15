@@ -45,7 +45,7 @@ def pad_encoded_data(encoded_data):
     encoded_data = padded_info + encoded_data
     return bytes(int(encoded_data[i:i+8], 2) for i in range(0, len(encoded_data), 8))
 
-def decode_data(encoded_data, code_table):
+def decode_data(encoded_data):
     reversed_table = {v: k for k, v in code_table.items()}
     current_code = ""
     decoded_bytes = bytearray()

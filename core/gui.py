@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+# core/gui.py
 import tkinter as tk
+from tkinter import filedialog
+import os
 from tkinter import filedialog, messagebox, ttk
 from modules import audio_module, text_module, image_module
 
@@ -79,7 +82,7 @@ def launch_main_gui():
                 elif filetype == "image":
                     bits, code_table, stats = image_module.encode(path)
                 elif filetype == "audio":
-                    bits, code_table, stats = audio_module.encode(path)
+                    bits, code_table, stats = audio_module.compress(path)
                 else:
                     messagebox.showerror("Lỗi", "Loại file không hợp lệ.")
                     return
@@ -100,14 +103,38 @@ def launch_main_gui():
             if not huff_path:
                 return
 
+            # Tự tạo tên file giải mã dựa trên tên file gốc
+            original_name = os.path.basename(huff_path).replace(".huff", "")
             filetype = self.file_type.get()
+            
+            # Tùy đuôi mở rộng theo loại file
+            ext_map = {
+                "text": ".txt",
+                "image": ".bmp",   # hoặc ".png" tùy bạn encode
+                "audio": ".wav"
+            }
+            ext = ext_map.get(filetype, "")
+
+            # Gợi ý tên file lưu
+            suggested_name = f"{original_name}_decoded{ext}"
+
+            # Cho phép người dùng chọn đường dẫn lưu file với tên gợi ý
+            save_path = filedialog.asksaveasfilename(
+                defaultextension=ext,
+                filetypes=[("All Files", "*.*")],
+                initialfile=suggested_name,
+                title="Chọn nơi lưu file giải mã"
+            )
+            if not save_path:
+                return
+
             try:
                 if filetype == "text":
-                    out_path = text_module.decode(huff_path)
+                    out_path = text_module.decode(huff_path, save_path)
                 elif filetype == "image":
-                    out_path = image_module.decode(huff_path)
+                    out_path = image_module.decode(huff_path, save_path)
                 elif filetype == "audio":
-                    out_path = audio_module.decode(huff_path)
+                    out_path = audio_module.decompress(huff_path, save_path)
                 else:
                     messagebox.showerror("Lỗi", "Loại file không hợp lệ.")
                     return

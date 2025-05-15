@@ -1,0 +1,82 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C Extension build files
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+*.manifest
+*.spec
+
+# Virtual environments
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Tkinter GUI related cache (optional, just in case)
+*.log
+*.tcl
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Pytest cache
+.pytest_cache/
+
+# MyPy, Pyright, and other type checkers
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+
+# VS Code settings
+.vscode/
+
+# Compressed Huffman files and Huffman tables
+*.huff
+*.huff.table
+
+# MacOS / Windows junk
+.DS_Store
+Thumbs.db
+
+# User-specific files
+*.swp
+*.bak
+*.tmp
+*.log

@@ -1,4 +1,5 @@
 import pickle
+import os
 from utils.huffman import (
     build_huffman_tree, build_code_table,
     encode_data, pad_encoded_data, decode_data
@@ -21,14 +22,19 @@ def compress_audio_file(path):
     with open(table_path, "wb") as f:
         pickle.dump(code_table, f)
 
-    return compressed_path, table_path, len(data), len(padded), code_table
+    stats = {
+        "Kích thước gốc (byte)": len(data),
+        "Kích thước nén (byte)": len(padded),
+        "Tỉ lệ nén (%)": round((1 - len(padded) / len(data)) * 100, 2) if len(data) else 0
+    }
+
+    return padded, code_table, stats
+
 
 def decompress_audio_file(path):
-    # Đọc dữ liệu nén từ .huff
     with open(path, "rb") as f:
         padded = f.read()
 
-    # Đọc bảng mã từ .huff.table
     table_path = path + ".table"
     with open(table_path, "rb") as f:
         code_table = pickle.load(f)
@@ -38,8 +44,16 @@ def decompress_audio_file(path):
     encoded_data = bit_str[8:-padding]
     decoded_data = decode_data(encoded_data, code_table)
 
-    output_path = path.replace(".huff", "_decompressed_audio")
+    # Xử lý tên file đầu ra: abc.wav.huff -> abc.wav -> abc_decompress.wav
+    if path.endswith(".huff"):
+        original_path = path[:-5]  # Bỏ ".huff"
+    else:
+        original_path = path
+
+    base, ext = os.path.splitext(original_path)
+    output_path = f"{base}_decompress{ext}"
+
     with open(output_path, "wb") as f:
         f.write(decoded_data)
 
-    return output_path, code_table
+    return output_path
