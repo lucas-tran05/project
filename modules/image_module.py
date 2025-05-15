@@ -1,7 +1,7 @@
-from img.main import compress_action, decompress_action
+from img.main import encode, decode
 
 def compress(file):
-    return compress_action(file)
+    return encode(file)
 
 def decompress(file):
-    return decompress_action(file)
+    return decode(file)
