@@ -1,3 +1,7 @@
-# -*- coding: utf-8 -*-
+from text.compressor import compress_file, decompress_file
 
-print("Đang phát triển...")
+def compress(file):
+    return compress_file(file)
+
+def decompress(file):
+    return decompress_file(file)
