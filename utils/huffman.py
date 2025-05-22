@@ -45,14 +45,13 @@ def pad_encoded_data(encoded_data):
     encoded_data = padded_info + encoded_data
     return bytes(int(encoded_data[i:i+8], 2) for i in range(0, len(encoded_data), 8))
 
-def decode_data(encoded_data):
-    reversed_table = {v: k for k, v in code_table.items()}
-    current_code = ""
+def decode_data(encoded_data, tree):
+    current = tree
     decoded_bytes = bytearray()
 
     for bit in encoded_data:
-        current_code += bit
-        if current_code in reversed_table:
-            decoded_bytes.extend(reversed_table[current_code])
-            current_code = ""
+        current = current.left if bit == '0' else current.right
+        if current.left is None and current.right is None:
+            decoded_bytes.extend(current.byte)
+            current = tree
     return decoded_bytes

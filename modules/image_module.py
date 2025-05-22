@@ -1,4 +1,4 @@
-from img.main import encode, decode
+from img.image import encode, decode
 
 def compress(file):
     return encode(file)
