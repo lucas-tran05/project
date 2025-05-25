@@ -64,6 +64,4 @@ python main.py
 
 - Python 3.10+
 - Tkinter (GUI)
-- Pillow (Xử lý ảnh)
-- Pydub hoặc librosa (Xử lý âm thanh)
 - Tự cài module Huffman riêng (utils.huffman)
