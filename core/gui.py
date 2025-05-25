@@ -53,13 +53,11 @@ def launch_main_gui():
         def choose_file(self):
             filetype = self.file_type.get()
             if filetype == "text":
-                filetypes = [("Text files", "*.txt *.docx")]
+                filetypes = [("Text files", "*.txt")]
             elif filetype == "image":
                 filetypes = [("Image files", "*.png *.jpg *.bmp")]
             elif filetype == "audio":
-                filetypes = [("Audio files", "*.wav *.mp3")]
-            else:
-                filetypes = [("All files", "*.*")]
+                filetypes = [("Audio files", "*.mp3")]
 
             path = filedialog.askopenfilename(filetypes=filetypes)
             if path:
