@@ -6,7 +6,6 @@ Hỗ trợ các định dạng: Văn bản (.txt), Hình ảnh (.png, .jpg), Âm
 ---
 ## 🧠 Bộ môn Lí thuyết thông tin
 Giảng viên: Phạm Văn Sự
-Nhóm: 13 
 
 ---
 
