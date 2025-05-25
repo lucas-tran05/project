@@ -95,17 +95,27 @@ def launch_main_gui():
                 messagebox.showerror("Lỗi", str(e))
 
         def decode_file(self):
-            huff_path = filedialog.askopenfilename(
-                filetypes=[
-                    ("Huffman Encoded Files", "*.huff;*.huffaudio;*.huffimage;*.hufftext;*.huff.data")
-                ]
-            )
+            filetype = self.file_type.get()
+            
+            # Định nghĩa filetypes dựa trên loại file được chọn
+            if filetype == "text":
+                filetypes = [("Huffman Text Files", "*.text.huff")]
+            elif filetype == "image":
+                filetypes = [("Huffman Image Files", "*.image.huff")]
+            elif filetype == "audio":
+                filetypes = [("Huffman Audio Files", "*.audio.huff")]
+            
+            # Mở dialog để chọn file mã hóa Huffman
+            huff_path = filedialog.askopenfilename(filetypes=filetypes)
             if not huff_path:
                 return
 
-            original_name = os.path.basename(huff_path).replace(".huff", "")
-            filetype = self.file_type.get()
+            # Lấy tên file gốc (loại bỏ phần mở rộng .huff, .text.huff, .image.huff, hoặc .audio.huff)
+            original_name = os.path.basename(huff_path)
+            for ext in [".text.huff", ".image.huff", ".audio.huff", ".huff"]:
+                original_name = original_name.replace(ext, "")
             
+            # Gợi ý phần mở rộng cho file giải mã
             ext_map = {
                 "text": ".txt",
                 "image": ".bmp",
@@ -115,9 +125,10 @@ def launch_main_gui():
 
             suggested_name = f"{original_name}_decoded{ext}"
 
+            # Mở dialog để chọn nơi lưu file giải mã
             save_path = filedialog.asksaveasfilename(
                 defaultextension=ext,
-                filetypes=[("All Files", "*.*")],
+                filetypes=[(f"{filetype.capitalize()} Files", f"*{ext}"), ("All Files", "*.*")],
                 initialfile=suggested_name,
                 title="Chọn nơi lưu file giải mã"
             )

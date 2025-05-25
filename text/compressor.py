@@ -23,7 +23,9 @@ def compress_file(input_path):
     encoded = encode_data(text, codebook)
     padded_bytes = pad_encoded_data(encoded)
 
-    output_path = input_path + ".huff"
+    # Tạo tên file đầu ra với đuôi .text.huff
+    base_name = os.path.splitext(input_path)[0]  # Lấy tên file không có đuôi
+    output_path = base_name + ".text.huff"
     with open(output_path, 'wb') as out:
         pickle.dump((tree, padded_bytes), out)
 
@@ -36,7 +38,7 @@ def compress_file(input_path):
     return padded_bytes, codebook, stats
 
 def decompress_file(input_path, output_path=None):
-    """Giải nén file .huff và lưu vào output_path (hoặc mặc định)"""
+    """Giải nén file .text.huff và lưu vào output_path (hoặc mặc định)"""
     with open(input_path, 'rb') as f:
         tree, byte_data = pickle.load(f)
 
@@ -52,7 +54,9 @@ def decompress_file(input_path, output_path=None):
 
     # Lưu kết quả
     if output_path is None:
-        output_path = input_path.replace(".huff", "_decoded.txt")
+        base_name = os.path.splitext(input_path)[0]  # Lấy tên file không có đuôi .text.huff
+        base_name = base_name.replace(".text", "")  # Loại bỏ .text nếu có
+        output_path = base_name + "_decoded.txt"
 
     with open(output_path, 'wb') as out:
         out.write(decoded_bytes)
