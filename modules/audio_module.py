@@ -1,7 +1,7 @@
-from audio.compressor import compress_audio_file, decompress_audio_file
+from audio.compressor import compress_audio, decompress_audio
 
 def compress(file):
-    return compress_audio_file(file)
+    return compress_audio(file)
 
-def decompress(file):
-    return decompress_audio_file(file)
+def decompress(file , output_path=None):
+    return decompress_audio(file, output_path)

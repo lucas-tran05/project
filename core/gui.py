@@ -11,7 +11,7 @@ def launch_main_gui():
         def __init__(self, root):
             self.root = root
             self.root.title("Huffman Encoder/Decoder")
-            self.root.geometry("700x500")
+            self.root.geometry("500x400")
             self.root.configure(bg="#f2f2f2")
 
             self.file_path = tk.StringVar()
@@ -20,39 +20,35 @@ def launch_main_gui():
             self.build_interface()
 
         def build_interface(self):
-            header = tk.Label(self.root, text="Hệ Thống Nén & Giải Nén Huffman", font=("Arial", 20, "bold"), fg="#004d99", bg="#f2f2f2")
+            header = tk.Label(self.root, text="Hệ Thống Nén & Giải Nén Huffman", font=("Arial", 16, "bold"), fg="#004d99", bg="#f2f2f2")
             header.pack(pady=15)
 
-            # ====== Frame chọn loại file ======
             type_frame = tk.LabelFrame(self.root, text="Chọn loại file", padx=10, pady=5, bg="#f2f2f2")
             type_frame.pack(fill="x", padx=20, pady=5)
 
             for text, val in [("Text", "text"), ("Image", "image"), ("Audio", "audio")]:
-                tk.Radiobutton(type_frame, text=text, variable=self.file_type, value=val, bg="#f2f2f2", font=("Arial", 11)).pack(side="left", padx=10)
+                tk.Radiobutton(type_frame, text=text, variable=self.file_type, value=val, bg="#f2f2f2", font=("Arial", 10)).pack(side="left", padx=10)
 
-            # ====== Frame chọn file ======
             file_frame = tk.Frame(self.root, bg="#f2f2f2")
             file_frame.pack(fill="x", padx=20, pady=10)
 
-            tk.Button(file_frame, text="📂 Chọn File", command=self.choose_file, bg="#cce6ff", width=15).pack(side="left")
+            tk.Button(file_frame, text="Chọn File", command=self.choose_file, bg="#cce6ff", width=15).pack(side="left")
             tk.Entry(file_frame, textvariable=self.file_path, width=60, font=("Arial", 10)).pack(side="left", padx=10)
 
-            # ====== Nút nén và giải nén ======
             btn_frame = tk.Frame(self.root, bg="#f2f2f2")
             btn_frame.pack(pady=10)
 
-            tk.Button(btn_frame, text="🗜 Mã hóa", command=self.encode_file, bg="#b3ffd9", width=20).pack(side="left", padx=20)
-            tk.Button(btn_frame, text="🧩 Giải mã", command=self.decode_file, bg="#ffcccc", width=20).pack(side="left", padx=20)
+            tk.Button(btn_frame, text="Mã hóa", command=self.encode_file, bg="#cce6ff", width=15).pack(side="left", padx=20)
+            tk.Button(btn_frame, text="Giải mã", command=self.decode_file, bg="#cce6ff", width=15).pack(side="left", padx=20)
 
-            # ====== Tabs hiển thị kết quả ======
             notebook = ttk.Notebook(self.root)
             notebook.pack(fill="both", expand=True, padx=15, pady=10)
 
             self.result_tab = tk.Text(notebook, wrap=tk.WORD, font=("Consolas", 11))
             self.codes_tab = tk.Text(notebook, wrap=tk.WORD, font=("Consolas", 11))
 
-            notebook.add(self.result_tab, text="📊 Kết Quả")
-            notebook.add(self.codes_tab, text="💡 Bảng Mã Huffman")
+            notebook.add(self.result_tab, text="Kết Quả")
+            notebook.add(self.codes_tab, text="Bảng Mã Huffman")
 
         def choose_file(self):
             filetype = self.file_type.get()
@@ -99,26 +95,26 @@ def launch_main_gui():
                 messagebox.showerror("Lỗi", str(e))
 
         def decode_file(self):
-            huff_path = filedialog.askopenfilename(filetypes=[("Huffman Encoded Files", "*.huff")])
+            huff_path = filedialog.askopenfilename(
+                filetypes=[
+                    ("Huffman Encoded Files", "*.huff;*.huffaudio;*.huffimage;*.hufftext;*.huff.data")
+                ]
+            )
             if not huff_path:
                 return
 
-            # Tự tạo tên file giải mã dựa trên tên file gốc
             original_name = os.path.basename(huff_path).replace(".huff", "")
             filetype = self.file_type.get()
             
-            # Tùy đuôi mở rộng theo loại file
             ext_map = {
                 "text": ".txt",
-                "image": ".bmp",   # hoặc ".png" tùy bạn encode
-                "audio": ".wav"
+                "image": ".bmp",
+                "audio": ".mp3"
             }
             ext = ext_map.get(filetype, "")
 
-            # Gợi ý tên file lưu
             suggested_name = f"{original_name}_decoded{ext}"
 
-            # Cho phép người dùng chọn đường dẫn lưu file với tên gợi ý
             save_path = filedialog.asksaveasfilename(
                 defaultextension=ext,
                 filetypes=[("All Files", "*.*")],
