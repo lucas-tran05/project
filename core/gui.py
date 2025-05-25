@@ -53,7 +53,7 @@ def launch_main_gui():
         def choose_file(self):
             filetype = self.file_type.get()
             if filetype == "text":
-                filetypes = [("Text files", "*.txt")]
+                filetypes = [("Text files", "*.txt *.docx")]
             elif filetype == "image":
                 filetypes = [("Image files", "*.png *.jpg *.bmp")]
             elif filetype == "audio":
