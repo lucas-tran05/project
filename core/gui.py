@@ -74,7 +74,7 @@ def launch_main_gui():
                 if filetype == "text":
                     bits, code_table, stats = text_module.encode(path)
                 elif filetype == "image":
-                    bits, code_table, stats = image_module.encode(path)
+                    bits, code_table, stats = image_module.compress(path)
                 elif filetype == "audio":
                     bits, code_table, stats = audio_module.compress(path)
                 else:
@@ -116,7 +116,7 @@ def launch_main_gui():
             # Gợi ý phần mở rộng cho file giải mã
             ext_map = {
                 "text": ".txt",
-                "image": ".bmp",
+                "image": ".png",
                 "audio": ".mp3"
             }
             ext = ext_map.get(filetype, "")
@@ -137,7 +137,7 @@ def launch_main_gui():
                 if filetype == "text":
                     out_path = text_module.decode(huff_path, save_path)
                 elif filetype == "image":
-                    out_path = image_module.decode(huff_path, save_path)
+                    out_path = image_module.decompress(huff_path, save_path)
                 elif filetype == "audio":
                     out_path = audio_module.decompress(huff_path, save_path)
                 else:

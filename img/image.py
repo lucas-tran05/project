@@ -1,73 +1,92 @@
+import pickle
 import os
-import json
 from utils.huffman import (
-    build_huffman_tree,
-    build_code_table,
-    encode_data,
-    decode_data,
-    pad_encoded_data
+    build_huffman_tree, build_code_table,
+    encode_data, pad_encoded_data, decode_data
 )
 
-def encode(image_path):
-    # Đọc file ảnh (dưới dạng byte)
-    with open(image_path, 'rb') as image:
-        original_bytes = image.read()
+def compress_image(input_path):
+    """
+    Nén file ảnh sử dụng thuật toán Huffman.
+    
+    Args:
+        input_path (str): Đường dẫn đến file ảnh đầu vào.
+    
+    Returns:
+        tuple: (padded_bytes, codebook, stats)
+            - padded_bytes: Dữ liệu đã nén (bytes).
+            - codebook: Bảng mã Huffman.
+            - stats: Thống kê về kích thước gốc, kích thước nén và tỉ lệ nén.
+    """
+    # Đọc dữ liệu ảnh từ file
+    with open(input_path, 'rb') as f:
+        image_data = f.read()
 
-    # Xây cây Huffman và tạo bảng mã
-    tree = build_huffman_tree(original_bytes)
-    code_table = build_code_table(tree)
+    # Tạo bảng tần suất
+    freq_table = {}
+    for byte in image_data:
+        freq_table[byte] = freq_table.get(byte, 0) + 1
 
-    # Mã hóa dữ liệu
-    encoded_bits = encode_data(original_bytes, code_table)
+    # Xây dựng cây Huffman và bảng mã
+    tree = build_huffman_tree(image_data)
+    codebook = build_code_table(tree)
+    encoded = encode_data(image_data, codebook)
+    padded_bytes = pad_encoded_data(encoded)
 
-    # Padding và chuyển thành bytes
-    padded_data = pad_encoded_data(encoded_bits)
+    # Tạo tên file đầu ra với đuôi .image.huff
+    base_name = os.path.splitext(input_path)[0]  # Lấy tên file không có đuôi
+    output_path = base_name + ".image.huff"
+    
+    # Lưu cây Huffman và dữ liệu mã hóa
+    with open(output_path + ".tree", 'wb') as out:
+        pickle.dump(tree, out)
+    with open(output_path, 'wb') as out:
+        out.write(padded_bytes)
 
-    # Tạo đường dẫn lưu
-    base_path = os.path.splitext(image_path)[0]
-    huff_path = base_path + '.huff'
-    map_path = base_path + '.map'
-
-    # Lưu file nén
-    with open(huff_path, 'wb') as f:
-        f.write(padded_data)
-
-    # Lưu bảng mã Huffman
-    json_table = {k.decode('latin1'): v for k, v in code_table.items()}
-    with open(map_path, 'w') as f:
-        json.dump(json_table, f)
-
-    # Trả về thống kê
+    # Tính toán thống kê
     stats = {
-        "Kích thước gốc (byte)": len(original_bytes),
-        "Kích thước nén (byte)": len(padded_data),
-        "Tỉ lệ nén": f"{len(original_bytes) / len(padded_data):.2f}"
+        "Kích thước gốc (bytes)": len(image_data),
+        "Kích thước nén (bytes)": len(padded_bytes),
+        "Tỉ lệ nén (%)": round(100 * len(padded_bytes) / len(image_data), 2) if len(image_data) > 0 else 0
     }
+    return padded_bytes, codebook, stats
 
-    return padded_data, code_table, stats
+def decompress_image(input_path, output_path=None):
+    """
+    Giải nén file ảnh từ định dạng .image.huff.
+    
+    Args:
+        input_path (str): Đường dẫn đến file .image.huff đã nén.
+        output_path (str, optional): Đường dẫn đến file ảnh giải nén. Nếu không cung cấp,
+                                    sẽ tự động tạo tên file với đuôi _decompressed.
+    
+    Returns:
+        str: Đường dẫn đến file ảnh đã giải nén.
+    """
+    # Đọc cây Huffman và dữ liệu mã hóa
+    with open(input_path + ".tree", 'rb') as f:
+        tree = pickle.load(f)
+    with open(input_path, 'rb') as f:
+        byte_data = f.read()
 
-def decode(huff_path):
-    # Đọc file nén đã padding
-    with open(huff_path, 'rb') as f:
-        compressed_bytes = f.read()
-
-    # Gỡ padding: lấy số bit đệm từ 8 bit đầu
-    bit_string = ''.join(bin(byte)[2:].rjust(8, '0') for byte in compressed_bytes)
-    extra_padding = int(bit_string[:8], 2)
-    bit_string = bit_string[8:-extra_padding] if extra_padding > 0 else bit_string
-
-    # Đọc bảng mã Huffman
-    map_path = os.path.splitext(huff_path)[0] + '.map'
-    with open(map_path, 'r') as f:
-        json_table = json.load(f)
-    code_table = {k.encode('latin1'): v for k, v in json_table.items()}
+    # Chuyển dữ liệu byte thành chuỗi bit
+    bit_str = ''.join(f"{byte:08b}" for byte in byte_data)
+    padding_len = int(bit_str[:8], 2)
+    bit_str = bit_str[8:-padding_len] if padding_len > 0 else bit_str[8:]
 
     # Giải mã dữ liệu
-    decoded_bytes = decode_data(bit_string, code_table)
+    decoded_bytes = decode_data(bit_str, tree)
 
-    # Lưu ảnh đã giải nén
-    out_path = os.path.splitext(huff_path)[0] + '_decompressed.jpg'
-    with open(out_path, 'wb') as f:
-        f.write(decoded_bytes)
+    # Tạo tên file đầu ra nếu không được cung cấp
+    if output_path is None:
+        base_name = os.path.splitext(input_path)[0]  # Lấy tên file không có đuôi .image.huff
+        base_name = base_name.replace(".image", "")  # Loại bỏ .image nếu có
+        # Giữ nguyên đuôi file gốc (nếu có) hoặc mặc định là .png
+        original_ext = os.path.splitext(base_name)[1] or ".png"
+        output_path = base_name + "_decompressed" + original_ext
 
-    return out_path
+    # Lưu file giải mã
+    with open(output_path, 'wb') as out:
+        out.write(decoded_bytes)
+
+    return output_path

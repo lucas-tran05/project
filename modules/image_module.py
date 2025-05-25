@@ -1,7 +1,7 @@
-from img.image import encode, decode
+from img.image import compress_image, decompress_image
 
 def compress(file):
-    return encode(file)
+    return compress_image(file)
 
-def decompress(file):
-    return decode(file)
+def decompress(file, output_path=None):
+    return decompress_image(file, output_path)
