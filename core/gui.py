@@ -97,7 +97,7 @@ def launch_main_gui():
             
             # Định nghĩa filetypes dựa trên loại file được chọn
             if filetype == "text":
-                filetypes = [("Huffman Text Files", "*.text.huff")]
+                filetypes = [("Huffman Text Files", "*.huff")]
             elif filetype == "image":
                 filetypes = [("Huffman Image Files", "*.image.huff")]
             elif filetype == "audio":
@@ -110,13 +110,13 @@ def launch_main_gui():
 
             # Lấy tên file gốc (loại bỏ phần mở rộng .huff, .text.huff, .image.huff, hoặc .audio.huff)
             original_name = os.path.basename(huff_path)
-            for ext in [".text.huff", ".image.huff", ".audio.huff", ".huff"]:
+            for ext in [".huff", ".image.huff", ".audio.huff", ".huff"]:
                 original_name = original_name.replace(ext, "")
             
             # Gợi ý phần mở rộng cho file giải mã
             ext_map = {
                 "text": "",
-                "image": ".bmp", 
+                "image": ".bmp",   # hoặc ".png" tùy bạn encode
                 "audio": ".wav"
             }
             ext = ext_map.get(filetype, "")
