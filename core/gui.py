@@ -115,7 +115,7 @@ def launch_main_gui():
             
             # Gợi ý phần mở rộng cho file giải mã
             ext_map = {
-                "text": ".txt",
+                "text": ".docx",
                 "image": ".png",
                 "audio": ".mp3"
             }
