@@ -116,7 +116,7 @@ def launch_main_gui():
             # Gợi ý phần mở rộng cho file giải mã
             ext_map = {
                 "text": "",
-                "image": ".bmp",   # hoặc ".png" tùy bạn encode
+                "image": ".bmp", 
                 "audio": ".wav"
             }
             ext = ext_map.get(filetype, "")
