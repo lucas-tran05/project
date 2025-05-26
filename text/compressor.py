@@ -52,7 +52,22 @@ def decompress_file(input_path, output_path=None):
 
     # Lưu kết quả
     if output_path is None:
-        output_path = input_path.replace(".huff", "_decoded.txt")
+        # Lấy tên gốc không có .huff
+        original_name = os.path.basename(input_path).replace(".huff", "")
+        
+        # Xác định đuôi mở rộng gốc
+        if original_name.endswith(".txt"):
+            ext = ".txt"
+        elif original_name.endswith(".docx"):
+            ext = ".docx"
+        else:
+            ext = ".txt"  # Mặc định an toàn
+
+        # Tạo đường dẫn output
+        output_path = os.path.join(
+            os.path.dirname(input_path),
+            f"DECODE_{original_name}{ext}"
+        )
 
     with open(output_path, 'wb') as out:
         out.write(decoded_bytes)

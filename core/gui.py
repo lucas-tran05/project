@@ -109,14 +109,14 @@ def launch_main_gui():
             
             # Tùy đuôi mở rộng theo loại file
             ext_map = {
-                "text": ".txt",
+                "text": "",
                 "image": ".bmp",   # hoặc ".png" tùy bạn encode
                 "audio": ".wav"
             }
             ext = ext_map.get(filetype, "")
 
             # Gợi ý tên file lưu
-            suggested_name = f"{original_name}_decoded{ext}"
+            suggested_name = f"DECODE_{original_name}{ext}"
 
             # Cho phép người dùng chọn đường dẫn lưu file với tên gợi ý
             save_path = filedialog.asksaveasfilename(
