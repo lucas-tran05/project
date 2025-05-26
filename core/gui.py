@@ -115,13 +115,14 @@ def launch_main_gui():
             
             # Gợi ý phần mở rộng cho file giải mã
             ext_map = {
-                "text": ".docx",
-                "image": ".png",
-                "audio": ".mp3"
+                "text": "",
+                "image": ".bmp",   # hoặc ".png" tùy bạn encode
+                "audio": ".wav"
             }
             ext = ext_map.get(filetype, "")
 
-            suggested_name = f"{original_name}_decoded{ext}"
+            # Gợi ý tên file lưu
+            suggested_name = f"DECODE_{original_name}{ext}"
 
             # Mở dialog để chọn nơi lưu file giải mã
             save_path = filedialog.asksaveasfilename(
