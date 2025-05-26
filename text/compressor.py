@@ -24,10 +24,10 @@ def compress_file(input_path):
     padded_bytes = pad_encoded_data(encoded)
 
     # Tạo tên file đầu ra với đuôi .text.huff
-    base_name = os.path.splitext(input_path)[0]  # Lấy tên file không có đuôi
-    output_path = base_name + ".text.huff"
+    output_path = input_path + ".huff"
     with open(output_path, 'wb') as out:
-        pickle.dump((tree, padded_bytes), out)
+        original_ext = os.path.splitext(input_path)[1]  # .txt hoặc .docx
+        pickle.dump((tree, padded_bytes, original_ext), out)
 
     stats = {
         "Kích thước gốc (bytes)": len(text),
@@ -40,7 +40,12 @@ def compress_file(input_path):
 def decompress_file(input_path, output_path=None):
     """Giải nén file .text.huff và lưu vào output_path (hoặc mặc định)"""
     with open(input_path, 'rb') as f:
-        tree, byte_data = pickle.load(f)
+        data = pickle.load(f)
+        if len(data) == 3:
+            tree, byte_data, original_ext = data
+        else:
+            tree, byte_data = data
+            original_ext = ".txt" 
 
     # Chuyển byte về chuỗi bit
     bit_str = ''.join(f"{byte:08b}" for byte in byte_data)
@@ -54,11 +59,16 @@ def decompress_file(input_path, output_path=None):
 
     # Lưu kết quả
     if output_path is None:
-        base_name = os.path.splitext(input_path)[0]  # Lấy tên file không có đuôi .text.huff
-        base_name = base_name.replace(".text", "")  # Loại bỏ .text nếu có
-        output_path = base_name + "_decoded.txt"
+        original_name = os.path.basename(input_path).replace(".huff", "").replace(".text", "")
+        output_path = os.path.join(
+            os.path.dirname(input_path),
+            f"DECODE_{original_name}{original_ext}"
+        )
+
 
     with open(output_path, 'wb') as out:
         out.write(decoded_bytes)
+
+
 
     return output_path
