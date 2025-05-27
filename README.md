@@ -6,17 +6,17 @@ Hỗ trợ các định dạng: Văn bản (.txt), Hình ảnh (.png, .jpg), Âm
 ---
 ## 🧠 Bộ môn Lí thuyết thông tin
 - Giảng viên: Phạm Văn Sự
-- Nhóm 13 học kíp 1 chiều T7
 
 ---
 
 ## 👨‍👩‍👧‍👦 Thành viên nhóm
+- Nhóm 13 học kíp 1 chiều T7
 
-| Họ tên               | Vai trò                            |
-|----------------------|--------------------------------    |
-| Trần Quốc Cường      | Leader, Dev xử lý âm thanh         |
-| Dương Thiên Ngân     | Dev xử lý văn bản, Dev GUI         |
-| Lê Văn Duy           | Dev xử lý hình ảnh, Core Logic     |
+| Họ tên             | Mã sinh viên   | Vai trò                            |
+|--------------------|----------------|------------------------------------|
+| Trần Quốc Cường    | B23DCAT034     | Leader, Dev xử lý âm thanh         |
+| Dương Thiên Ngân   | B23DCAT209     | Dev xử lý văn bản, Dev GUI         |
+| Lê Văn Duy         | B23DCAT074     | Dev xử lý hình ảnh, Core Logic     |
 
 ---
 
