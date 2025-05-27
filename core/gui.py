@@ -1,5 +1,9 @@
-# -*- coding: utf-8 -*-
-# core/gui.py
+# Project: A data encryption and decryption application using the Huffman algorithm with a graphical user interface.
+# To fulfil the requirement of FIT Course by Pham@PTIT
+# Tran Quoc Cuong - B23DCAT034 - 13
+# Duong Thien Ngan - B23DCAT209 - 13
+# Le Van Duy - B23DCAT074 - 13
+
 import tkinter as tk
 from tkinter import filedialog
 import os
@@ -95,25 +99,21 @@ def launch_main_gui():
         def decode_file(self):
             filetype = self.file_type.get()
             
-            # Định nghĩa filetypes dựa trên loại file được chọn
             if filetype == "text":
-                filetypes = [("Huffman Text Files", "*.huff")]
+                filetypes = [("Huffman Text Files", "*.txt.huff *.docx.huff")]
             elif filetype == "image":
                 filetypes = [("Huffman Image Files", "*.image.huff")]
             elif filetype == "audio":
                 filetypes = [("Huffman Audio Files", "*.audio.huff")]
             
-            # Mở dialog để chọn file mã hóa Huffman
             huff_path = filedialog.askopenfilename(filetypes=filetypes)
             if not huff_path:
                 return
 
-            # Lấy tên file gốc (loại bỏ phần mở rộng .huff, .text.huff, .image.huff, hoặc .audio.huff)
             original_name = os.path.basename(huff_path)
             for ext in [".image.huff", ".audio.huff", ".huff"]:
                 original_name = original_name.replace(ext, "")
             
-            # Gợi ý phần mở rộng cho file giải mã
             ext_map = {
                 "text": "",
                 "image": ".png", 
@@ -121,10 +121,8 @@ def launch_main_gui():
             }
             ext = ext_map.get(filetype, "")
 
-            # Gợi ý tên file lưu
             suggested_name = f"DECODE_{original_name}{ext}"
 
-            # Mở dialog để chọn nơi lưu file giải mã
             save_path = filedialog.asksaveasfilename(
                 defaultextension=ext,
                 filetypes=[(f"{filetype.capitalize()} Files", f"*{ext}"), ("All Files", "*.*")],
