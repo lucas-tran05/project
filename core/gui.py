@@ -61,7 +61,7 @@ def launch_main_gui():
             elif filetype == "image":
                 filetypes = [("Image files", "*.png *.jpg *.bmp")]
             elif filetype == "audio":
-                filetypes = [("Audio files", "*.mp3")]
+                filetypes = [("Audio files", "*.mp3 *.mp4")]
 
             path = filedialog.askopenfilename(filetypes=filetypes)
             if path:
