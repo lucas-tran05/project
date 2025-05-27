@@ -54,7 +54,7 @@ def decompress_image(input_path, output_path=None):
         base_name = os.path.splitext(input_path)[0]  
         base_name = base_name.replace(".image", "")  
         original_ext = os.path.splitext(base_name)[1] or ".png"
-        output_path = base_name + "_decoded" + original_ext
+        output_path = base_name
 
     with open(output_path, 'wb') as out:
         out.write(decoded_bytes)
